@@ -31,5 +31,55 @@ float gains[] = {1.0, 1.0, 1.0, 1.0, 1.0};
 
 int main(int argc, char **argv)
 {
-    Filter<float> *x = new FIRFilter<float>(gains, 5);
+
+    ////////////////// Test 1 ///////////////////
+    float y[] = {1,2,3,4,5,5,5,5,5,5};
+
+    // Test that outputs are correct for basic block filter.
+    Filter<float> *filter1 = new FIRFilter<float>(gains, 5);
+
+    for (int i = 0; i < 10; i++) {
+        float result = filter1->filter(1.0);
+        if (result != y[i]) {
+            std::cerr << "FAILED: test 1 for simple block filtering." << std::endl;
+            return -1;
+        } // end if
+    } // end for
+
+    ///////////////// Test 2 ///////////////////////
+    int gains2[] = {3,-1,1};
+    int y2[] = {3,2,3,3,3};
+
+    FIRFilter<int> filter2;
+    filter2.setGains(gains2, 3);
+
+    for (int i = 0; i < 5; i++) {
+        int result = filter2.filter(1);
+        //std::cout << result << " y2 = " << y2[i] << " " << (int)(result != y2[i]) << std::endl;
+        if (result != y2[i]) {
+            std::cerr << "FAILED: test 2 for simple filtering." << std::endl;
+            return -1;
+        } // end if
+    } // end for
+
+    ///////////////////// Test 3 /////////////////////////
+
+    double gains3[] = {0.1, 0.2, 0.3, 0.4, 0.5};
+    double y3[] = {0.1, 0.4, 1.0, 2.0};
+
+    FIRFilter<double> filter3(gains3, 5);
+
+    for (int i = 1; i < 5; i++) {
+        double result = filter3.filter(i);
+        if (result != y3[i-1]) {
+            std::cerr << "FAILED: test 3 for simple filtering." << std::endl;
+            std::cerr << "Result = " << result << " y3[i] = " << y3[i] << std::endl;
+            return -1;
+        } // end if
+    }
+
+
+
+
+
 } // end main

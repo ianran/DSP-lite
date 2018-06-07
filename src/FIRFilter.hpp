@@ -31,6 +31,8 @@
 #ifndef __FIR_FILTER_IMPL__
 #define __FIR_FILTER_IMPL__
 
+#include "FIRFilter.h"
+
 // Constructor
 // Give it your FIR coefficients as an array, and length of the array.
 // These can be changed later, and placing NULL is ok.
@@ -43,6 +45,7 @@ FIRFilter<T>::FIRFilter()
 {
     length = -1; // set default to not got strange results.
     setGains(NULL, -1);
+    curBufLoc = 0;
 } // end constructor
 
 // Constructor
@@ -57,6 +60,7 @@ FIRFilter<T>::FIRFilter(T *coefficients, uint16_t Length)
 {
     length = -1; // set default to not got strange results.
     setGains(coefficients, Length);
+    curBufLoc = 0;
 } // end constructor
 
 
@@ -72,7 +76,7 @@ void FIRFilter<T>::setGains(T *coefficients, uint16_t Length)
     if (Length != length && Length > 0) {
         // reallocate correct size buffer
         buffer = new T[Length];
-        for (uint16_t i = 0; i < length; i++) { buffer[i] = 0.0; }
+        for (uint16_t i = 0; i < Length; i++) { buffer[i] = 0.0; }
     }
 
     length = Length;
@@ -90,8 +94,20 @@ void FIRFilter<T>::setGains(T *coefficients, uint16_t Length)
 template <typename T>
 T FIRFilter<T>::filter(T x)
 {
-    // TODO: actually write this code!
-    output = x;
+    // place into current buffer location.
+    buffer[curBufLoc] = x;
+
+    output = 0.0;
+    // perform convolutional step.
+    for (uint16_t i = 0; i < length; i++) {
+        // have circular buffer wrap around on itself, pull out
+        // current gain.
+        output += buffer[(i + curBufLoc) % length] * gains[i];
+    }
+    // update buffer location for next iteration.
+    if (curBufLoc == 0) { curBufLoc = length; }
+    curBufLoc--;
+
     return output;
 } // end filter function
 
@@ -105,17 +121,6 @@ T FIRFilter<T>::getOutput()
 {
     return output;
 } // end getOutput function.
-
-
-
-
-
-
-
-
-
-
-
 
 
 

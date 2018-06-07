@@ -86,6 +86,7 @@ public:
 private:
     T *buffer;
     T *gains;
+    uint16_t curBufLoc;
     uint16_t length;
     T output;
 };
