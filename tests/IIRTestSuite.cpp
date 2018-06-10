@@ -17,17 +17,17 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-// FIRTestSuite.cpp
+// IIRTestSuite.cpp
 // Written Ian Rankin - June 2018
 //
-// This is a test suite for the FIR filter to make sure
+// This is a test suite for the IIR filter to make sure
 // it is working correctly.
 
 #include <iostream>
-#include <FIRFilter.h>
+#include <IIRFilter.h>
 #include <Filter.h>
 
-float gains[] = {1.0, 1.0, 1.0, 1.0, 1.0};
+
 
 int main(int argc, char **argv)
 {

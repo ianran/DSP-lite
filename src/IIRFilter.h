@@ -17,35 +17,49 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-// FIRFilter
+// IIRFilter
 // Written Ian Rankin - June 2018
 //
 // Depends:
 // filter.h
-// impl/FIRFilter.hpp
+// impl/IIRFilter.hpp
 //
-// This is the class for all Finite Impulse Response filters.
-// implemented using a circular buffer.
+// This is the class for all Infinte Impulse Response filters.
+// implemented using a circular buffer, in cascade form.
+// By using cannonical form, only a single circular buffer is required.
 //
+// The filter is assumed to be given as the form:
+// y[n] = (1 / a0)(b0*x[n] + b1*x[n-1] + ... + bk*x[n-k] -
+//                 a1*y[n-1] - a2*y[n-2] - ... - aj*yn[-k])
+//
+// a = feedback coefficients
+// b = feedforward coeffcients.
+//
+// However computation is done in cannonical from, which reverse the order of operations,
+// and reduces the memory usage by half.
+//
+// TODO: Need to re-write dealing buffer, lengths for 2 different buffer lengths
 
-#ifndef __FIR_FILTER__
-#define __FIR_FILTER__
+#ifndef __IIR_FILTER__
+#define __IIR_FILTER__
 
 #include "Filter.h"
 #include <cstdint>
 
 template <class T>
-class FIRFilter: public Filter<T> {
+class IIRFilter: public Filter<T> {
 public:
     // Constructor
     // Give it your FIR coefficients as an array, and length of the array.
     // These can be changed later, and placing NULL is ok.
     // Will allocate needed buffer. Set length to -1 if unknown size.
     //
-    // @param coefficients - the FIR coefficients for the filter.
-    // @param length - the length of the filter. -1 for unknown.
-    FIRFilter(T *coefficients, uint16_t length);
-    FIRFilter();
+    // @param feedForwardCoef - the feed forward coefficients for the filter.
+    // @param feedbackCoef - the feedback coefficients for the filter.
+    // @param forwardlength - the length of the feed foward filter.
+    // @param feedbackLength - the length of the feedback gains.
+    IIRFilter(T *feedForwardCoef, T *feedbackCoef, uint16_t forwardLength, uint16_t backLength);
+    IIRFilter();
 
     // update
     // The main function of all filter subclasses, is
@@ -68,24 +82,34 @@ public:
     // set gains lets you reset the current gains to any FIR
     // gains. Will not delete old gains / coefficients.
     //
-    // @param coefficients - the coefficients used in the filter.
-    // @param length - the length of the filter.
-    void setGains(T *coefficients, uint16_t length);
+    // @param feedForwardCoef - the feed forward coefficients for the filter.
+    // @param feedbackCoef - the feedback coefficients for the filter.
+    // @param forwardlength - the length of the feed foward filter.
+    // @param feedbackLength - the length of the feedback gains.
+    void setGains(T *feedForwardCoef, T *feedbackCoef, uint16_t forwardLength, uint16_t backLength);
 
-    // getGains
-    // This will return the array of the gains.
+    // getFeedbackGains
+    // This will return the array of the a vector gains.
     // You will be free to change the set of gains. (Don't abuse this!)
     //
     // @return - the gains as a single array.
-    T *getGains(); // {  return gains; }
+    T *getFeedbackGains(){  return fbGains; }
+
+    // getFeedForwardGains
+    // This will return the array of the b vector gains.
+    // You will be free to change the set of gains. (Don't abuse this!)
+    //
+    // @return - the gains as a single array.
+    T *getFeedForwardGains(){  return ffGains; }
 
     // getLength
     // returns the order of the FIR filter.
-    uint16_t getLength(); // const { return length; }
+    uint16_t getLength() const { return length; }
 
 private:
     T *buffer;
-    T *gains;
+    T *ffGains; // feedforward gains.
+    T *fbGains
     uint16_t curBufLoc;
     uint16_t length;
     T output;

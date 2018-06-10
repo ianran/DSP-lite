@@ -77,11 +77,11 @@ public:
     // You will be free to change the set of gains. (Don't abuse this!)
     //
     // @return - the gains as a single array.
-    T *getGains(); // {  return gains; }
+    T *getGains() {  return gains; }
 
     // getLength
     // returns the order of the FIR filter.
-    uint16_t getLength(); // const { return length; }
+    uint16_t getLength() const { return length; }
 
 private:
     T *buffer;
