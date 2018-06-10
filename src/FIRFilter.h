@@ -24,8 +24,8 @@
 // filter.h
 // impl/FIRFilter.hpp
 //
-// This is the class for all Finite Impulse Response filters.
-// implemented using a circular buffer.
+// This is the class for all Infinte Impulse Response filters.
+// implemented using 2 circular buffers.
 //
 
 #ifndef __FIR_FILTER__
