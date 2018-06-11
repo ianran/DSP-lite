@@ -33,59 +33,61 @@ int main(int argc, char **argv)
 {
 
     ////////////////// Test 1 ///////////////////
-    float y[] = {1,2,3,4,5,5,5,5,5,5};
+    float y[] = {0, 0, 1, 1, 1.5, 1.5, 1.75, 1.75};
+
+    float ffGain1[] = {0, 0, 1};
+    float fbGain1[] = {0, -0.5};
 
     // Test that outputs are correct for basic block filter.
-    Filter<float> *filter1 = new FIRFilter<float>(gains, 5);
+    Filter<float> *filter1 = new IIRFilter<float>(ffGain1, fbGain1, 3, 2);
 
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 8; i++) {
         float result = filter1->filter(1.0);
+        //std::cout << result << std::endl;
         if (result != y[i]) {
-            std::cerr << "FAILED: test 1 for simple block filtering." << std::endl;
+            std::cout << "y["<<i<<"] = " << y[i] << " result = " << result << std::endl;
+            std::cerr << "FAILED: test 1 for simple IIR filtering." << std::endl;
             return -1;
         } // end if
     } // end for
 
-    ///////////////// Test 2 ///////////////////////
-    int gains2[] = {3,-1,1};
-    int y2[] = {3,2,3,3,3};
 
-    FIRFilter<int> filter2;
-    filter2.setGains(gains2, 3);
+    //////////////////////////// Test 2 ///////////////////////////////
 
-    for (int i = 0; i < 5; i++) {
-        int result = filter2.filter(1);
-        //std::cout << result << " y2 = " << y2[i] << " " << (int)(result != y2[i]) << std::endl;
-        if (result != y2[i]) {
-            std::cerr << "FAILED: test 2 for simple filtering." << std::endl;
+    int x2[] = {1,3,2,5,4,6,0,0,0};
+    int y2[] = {1,4,7,14,17,27,28,29,27};
+
+    int ffGain2[] = {1, 1, 2};
+    int fbGain2[] = {0, 0, -1};
+
+    IIRFilter<int> filter2;
+    filter2.setGains(ffGain2, fbGain2, 3, 3);
+
+    for (int i = 0; i <= 8; i++)
+    {
+        int res = filter2.filter(x2[i]);
+
+        if (res != y2[i]) {
+            std::cerr << "FAILED: test 2 for IIR filtering." << std::endl;
             return -1;
-        } // end if
-    } // end for
-
-    ///////////////////// Test 3 /////////////////////////
-
-    double gains3[] = {0.1, 0.2, 0.3, 0.4, 0.5};
-    double y3[] = {0.1, 0.4, 1.0, 2.0};
-
-    FIRFilter<double> filter3(gains3, 5);
-
-    for (int i = 1; i < 5; i++) {
-        filter3.filter(i);
-        double result = filter3.getOutput();
-        if (result != y3[i-1]) {
-            std::cerr << "FAILED: test 3 for simple filtering." << std::endl;
-            std::cerr << "Result = " << result << " y3[i] = " << y3[i] << std::endl;
-            return -1;
-        } // end if
+        }
     }
-    if (filter3.getLength() != 5) {
-        std::cerr << "FAILED: test for get length function... (What did you break!?)" << std::endl;
+
+    if (filter2.getFeedbackGains() == NULL) {
+        std::cout << "FAILED: feedback gains get." << std::endl;
         return -1;
     }
-    if (filter3.getGains() == NULL) {
-        std::cerr << "FAILED: get gains test (What did you break!?)" << std::endl;
+    if (filter2.getFeedForwardGains() == NULL) {
+        std::cout << "FAILED: feed forward gains get." << std::endl;
         return -1;
     }
+    if (filter2.getLength() != 4) {
+        std::cout << "FAILED: length incorrect." << std::endl;
+        return -1;
+    }
+
+
+
 
 
     // test passed if reached here.

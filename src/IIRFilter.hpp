@@ -58,7 +58,7 @@ template <typename T>
 IIRFilter<T>::IIRFilter()
 {
     length = -1; // set default to not got strange results.
-    setGains(NULL, NULL, -1);
+    setGains(NULL, NULL, -1, -1);
     curBufLoc = 0;
 } // end constructor
 
@@ -75,7 +75,7 @@ IIRFilter<T>::IIRFilter(T *feedForwardCoef, T *feedbackCoef,
                     uint16_t forwardLength, uint16_t backLength)
 {
     length = -1; // set default to not got strange results.
-    setGains(feedForwardCoef, feedbackCoef, Length);
+    setGains(feedForwardCoef, feedbackCoef, forwardLength, backLength);
     curBufLoc = 0;
 } // end constructor
 
@@ -92,13 +92,21 @@ template <typename T>
 void IIRFilter<T>::setGains(T *feedForwardCoef, T *feedbackCoef,
                     uint16_t forwardLength, uint16_t backLength)
 {
-    if (Length != length && Length > 0) {
+    uint16_t newLength;
+    // select the
+    if (forwardLength > (backLength + 1)) { newLength = forwardLength; }
+    else { newLength = backLength + 1; }
+
+    if (newLength != length && newLength > 0) {
         // reallocate correct size buffer
-        buffer = new T[Length];
-        for (uint16_t i = 0; i < Length; i++) { buffer[i] = 0.0; }
+        length = newLength;
+        buffer = new T[length];
+        for (uint16_t i = 0; i < length; i++) { buffer[i] = 0.0; }
     }
 
-    length = Length;
+    ffLength = forwardLength;
+    fbLength = backLength;
+
     ffGains = feedForwardCoef;
     fbGains = feedbackCoef;
 }
@@ -116,18 +124,18 @@ T IIRFilter<T>::filter(T x)
 {
     T w0 = 0.0; // this is the intermediate value to place into the buffer.
     // multiply feedback gains first.
-    for (uint16_t i = 1; i < length; i++) {
+    for (uint16_t i = 0; i < fbLength; i++) {
         // have circular buffer wrap around on itself, pull out
         // current gain.
-        w0 += -buffer[(i + curBufLoc) % length] * fbGains[i-1];
+        w0 += -buffer[(i + curBufLoc + 1) % length] * fbGains[i];
     }
 
     // place into current buffer location.
-    buffer[curBufLoc] = w0;
+    buffer[curBufLoc] = w0 + x;
 
     output = 0.0;
     // perform feedfoward step.
-    for (uint16_t i = 0; i < length; i++) {
+    for (uint16_t i = 0; i < ffLength; i++) {
         // have circular buffer wrap around on itself, pull out
         // current gain.
         output += buffer[(i + curBufLoc) % length] * ffGains[i];

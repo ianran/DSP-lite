@@ -45,6 +45,7 @@
 
 #include "Filter.h"
 #include <cstdint>
+#include <iostream>
 
 template <class T>
 class IIRFilter: public Filter<T> {
@@ -58,7 +59,8 @@ public:
     // @param feedbackCoef - the feedback coefficients for the filter.
     // @param forwardlength - the length of the feed foward filter.
     // @param feedbackLength - the length of the feedback gains.
-    IIRFilter(T *feedForwardCoef, T *feedbackCoef, uint16_t forwardLength, uint16_t backLength);
+    IIRFilter(T *feedForwardCoef, T *feedbackCoef,
+         uint16_t forwardLength, uint16_t backLength);
     IIRFilter();
 
     // update
@@ -86,7 +88,8 @@ public:
     // @param feedbackCoef - the feedback coefficients for the filter.
     // @param forwardlength - the length of the feed foward filter.
     // @param feedbackLength - the length of the feedback gains.
-    void setGains(T *feedForwardCoef, T *feedbackCoef, uint16_t forwardLength, uint16_t backLength);
+    void setGains(T *feedForwardCoef, T *feedbackCoef,
+                uint16_t forwardLength, uint16_t backLength);
 
     // getFeedbackGains
     // This will return the array of the a vector gains.
@@ -109,13 +112,15 @@ public:
 private:
     T *buffer;
     T *ffGains; // feedforward gains.
-    T *fbGains
+    T *fbGains;
     uint16_t curBufLoc;
     uint16_t length;
+    uint16_t ffLength;
+    uint16_t fbLength;
     T output;
 };
 
 // include "Implementation file
-#include "FIRFilter.hpp"
+#include "IIRFilter.hpp"
 
 #endif
