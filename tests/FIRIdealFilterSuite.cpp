@@ -76,14 +76,22 @@ int main(int argc, char **argv)
 
     FIRFilter<double> lowKaiser(gains, length);
 
+    cout << "[";
+    // Print out coefficients
+    for (int i = 0; i < length-1; i++) {
+        //
+        cout << gains[i] << ", ";
+    }
+    cout << gains[length - 1] << "]" << endl;
+
     ////////////////// Test removes high freq data. /////////////////
     for (int i = 0; i < 2000; i++) {
         double x = (i % 2) ? 1 : -1;
-        double out = lowPassRect.filter(x);
-        if (i > 200) {
+        double out = lowKaiser.filter(x);
+        if (i > 250) {
             // check filter is past saturation period
             if (out > 0.002 && out > -0.002) {
-                cout << "FAILED: lowpass allowed output = " << out << endl;
+                cout << "FAILED: lowpass allowed output = " << out << " at i = " << i << endl;
                 return -1;
             }
         }

@@ -83,7 +83,7 @@ int applyKaiserWindow(T *input, uint16_t N, double A)
         double w = besselFunc(alpha *
             sqrt(1.0 - ((n - M) * (n - M) / (M * M))))
             / denominator;
-        std::cout << "w = " << w << std::endl;
+        //std::cout << "w = " << w << std::endl;
         input[n] = (T)((double)input[n] * w);
     } // end for loop
 
