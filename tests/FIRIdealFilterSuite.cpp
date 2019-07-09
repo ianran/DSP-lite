@@ -97,4 +97,5 @@ int main(int argc, char **argv)
         }
     }
 
+    cout << "Passed" << std::endl;
 } // end main

@@ -1,2 +1,3 @@
 ./FIRTestSuite
 ./IIRTestSuite
+./FIRIdealFilterSuite
