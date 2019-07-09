@@ -33,4 +33,4 @@
 
 
 # python files
-.ipynb
+*.ipynb
