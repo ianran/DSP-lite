@@ -28,6 +28,7 @@
 #ifndef __FILTER_UTILITY__
 #define __FILTER_UTILITY__
 
+#include <cstdint>
 
 // applyHammingWindow
 // This function applies a hamming window to an arbituary input

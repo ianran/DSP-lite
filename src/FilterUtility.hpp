@@ -32,7 +32,7 @@
 #define __FILTER_UTILITY_IMP__
 
 #include <cmath>
-#include <cstdint>
+
 
 // applyHammingWindow
 // This function applies a hamming window to an arbituary input
