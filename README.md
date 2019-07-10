@@ -9,7 +9,7 @@ Each file will place at the top what other files it depends on to be compiled in
 
 
 Example usage:
-
+```
 int16_t gains[] = {1,1,1,1,1};
 FIRFilter<int16_t> filter(gains, 5);
 
@@ -18,3 +18,4 @@ while (true) {
     int16_t in = // Some input;
     out = filter.filter(in);
 }
+```
