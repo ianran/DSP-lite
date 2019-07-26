@@ -79,7 +79,7 @@ int generateJerkLimitedFilter(T maxVel, T maxAccel, T maxJerk,
     gains = new T[totalLen];
     float height = maxVel / (accelLen + jerkLen);
     for (int i = 0; i < jerkLen; i++) {
-        gains[idx] = i * height / jerkLen;
+        gains[idx] = (i + 0.5) * height / jerkLen;
         idx++;
     }
     for (int i = 0; i < accelLen; i++) {
@@ -87,7 +87,7 @@ int generateJerkLimitedFilter(T maxVel, T maxAccel, T maxJerk,
         idx++;
     }
     for (int i = 0; i < jerkLen; i++) {
-        gains[idx] = (jerkLen - i - 1) * height / jerkLen;
+        gains[idx] = (jerkLen - i - 0.5) * height / jerkLen;
         idx++;
     }
 
