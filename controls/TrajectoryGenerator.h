@@ -26,7 +26,7 @@
 #define __TRAJECTORY_GENERATOR__
 
 #include <FIRFilter.h>
-#include "Counter.h"
+#include <Counter.h>
 #include <cmath>
 
 
@@ -64,8 +64,7 @@ public:
     // generate a trajectory generator as a S-curve.
     TrajectoryGenerator(T MaxVel, T MaxAccel, T MaxJerk, T UpdateRate);
 
-    void setpoint(T setpoint) { counter.setSetpoint(setpoint); }
-
+    void setpoint(T setpoint);
     // update
     // get the latest update on the trajectory generator.
     // @param position [out] - position output of the trajectory generator.
@@ -77,8 +76,10 @@ private:
     FIRFilter<T> filter;
 
     T pos;
+    T maxVel;
+    T updateRate;
 };
 
-#include "TrajectoryGenerator.hpp"
+#include <TrajectoryGenerator.hpp>
 
 #endif

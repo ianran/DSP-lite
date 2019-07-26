@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>DSP-lite</name>
+  <version>0.0.0</version>
+  <description>Various digital signal processing algorithms</description>
+  <maintainer email="ianrancon@gmail.com">Ian Rankin</maintainer>
+  <license>MIT</license>
+  <author email="ianrancon@gmail.com">Ian Rankin</author>
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>roscpp</depend>
+  <depend>rospy</depend>
+  <depend>std_msgs</depend>
+  <depend>message_generation</depend>
+</package>

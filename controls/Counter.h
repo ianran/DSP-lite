@@ -23,13 +23,15 @@
 // A counter object to continuously return a 1, 0, -1 to the trajectory
 // generator filter.
 
-#ifndef __COUNTER__
-#define __COUNTER__
+#ifndef __COUNTER_TRAJ__
+#define __COUNTER_TRAJ__
 
 template <class T>
 class Counter {
 public:
-    Counter(T startLocation = 0) {}
+    Counter(T startLocation = 0) { gapNum = 0; i = 0; }
+
+    void setGap(int GapNum) { gapNum = GapNum; i = gapNum; }
 
     void setSetpoint(T Setpoint) { setpoint = Setpoint; }
 
@@ -41,23 +43,48 @@ public:
     // @return - output of counter.
     T update() {
         T diff = setpoint - loc;
+        T change;
 
         if (diff == 0.0) {
-            return 0.0;
+            change = 0.0;
         } else if (diff >= 1.0) {
-            loc += 1.0;
-            return 1.0;
+            change = 1.0;
         } else if (diff <= -1.0) {
-            loc += -1.0;
-            return -1.0;
+            change = -1.0;
         } else { // and < 1.0
-            loc += diff;
-            return diff;
+            change = diff;
         }
+
+        int8_t sign = 0;
+        if (diff > 0) { sign = 1; }
+        else if (diff < 0) { sign = -1; }
+
+        if ((prev != 0 && prev != sign)) {
+            i = 0;
+            change = 0.0;
+        } else {
+            i++;
+        }
+
+        if (!(i > gapNum || prevDir == sign)) {
+            change = 0.0;
+        }
+
+        if (change > 0) { prevDir = 1; }
+        else if (change < 0) { prevDir = -1; }
+
+        loc += change;
+
+        prev = sign;
+        return change;
     }
 
 private:
     T loc;
+    int8_t prev;
+    int8_t prevDir;
+    int gapNum;
+    int i;
     T updateRate;
     T setpoint;
 };
